@@ -1,0 +1,599 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="color-scheme" content="light dark" />
+<link rel="icon" href="data:," />
+<title>Nuphos 调研报告</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@600;700;900&family=Noto+Sans+SC:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+:root{
+--bg:#f6f6f3; --surface:#ffffff; --surface2:#efefea; --ink:#171a1e; --ink2:#4c5257; --ink3:#7d838a;
+--line:#dddcd4; --accent:#c2410c; --accent-soft:#fbe9dd; --good:#1d7a4f; --good-soft:#e2f2e8;
+--warn:#a35b00; --warn-soft:#fdf0d9; --bad:#b3271e; --bad-soft:#fbe7e4;
+--code-bg:#eceae2;
+--shadow:0 1px 2px rgba(20,20,20,.05),0 8px 24px rgba(20,20,20,.05);
+}
+@media (prefers-color-scheme: dark){
+:root{
+--bg:#101315; --surface:#181c1f; --surface2:#1f2428; --ink:#eceee9; --ink2:#b6bcc0; --ink3:#858d92;
+--line:#2c3338; --accent:#ff8a4c; --accent-soft:#3a2417; --good:#4cc38a; --good-soft:#173327;
+--warn:#f5b544; --warn-soft:#3a2c10; --bad:#ff7a6e; --bad-soft:#3c1d19;
+--code-bg:#22282c;
+--shadow:0 1px 2px rgba(0,0,0,.3),0 8px 24px rgba(0,0,0,.25);
+}
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);
+font-family:"Noto Sans SC",-apple-system,"PingFang SC","Microsoft YaHei",sans-serif;
+font-size:16px;line-height:1.75;-webkit-font-smoothing:antialiased}
+.mono{font-family:"IBM Plex Mono",ui-monospace,SFMono-Regular,Menlo,monospace}
+a{color:var(--accent);text-decoration:none;overflow-wrap:anywhere}
+a:hover{text-decoration:underline}
+.wrap{max-width:920px;margin:0 auto;padding:0 20px}
+
+/* ---------- top nav ---------- */
+nav.toc{position:sticky;top:0;z-index:50;background:color-mix(in srgb,var(--bg) 88%,transparent);
+backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+nav.toc.wrap{display:flex;gap:4px;overflow-x:auto;padding-top:10px;padding-bottom:10px;scrollbar-width:none}
+nav.toc.wrap::-webkit-scrollbar{display:none}
+nav.toc a{flex:0 0 auto;color:var(--ink2);font-size:13.5px;font-weight:500;padding:5px 11px;border-radius:999px;white-space:nowrap}
+nav.toc a:hover{text-decoration:none;color:var(--ink)}
+nav.toc a.on{background:var(--ink);color:var(--bg)}
+
+/* ---------- hero ---------- */
+header.hero{padding:52px 0 8px}
+.kicker{font-size:13px;letter-spacing:.14em;color:var(--accent);font-weight:700}
+h1{font-family:"Noto Serif SC",serif;font-weight:900;font-size:clamp(34px,6vw,52px);line-height:1.2;margin:12px 0 6px}
+.en-sub{font-family:"IBM Plex Mono",monospace;font-size:14px;color:var(--ink3)}
+.verdict{font-size:19px;line-height:1.7;margin:22px 0 0;max-width:46em}
+.verdict strong{color:var(--accent)}
+.meta-line{margin-top:16px;font-size:13.5px;color:var(--ink3)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:30px 0 6px}
+.stat{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:14px 14px 10px;box-shadow:var(--shadow)}
+.stat.n{font-family:"IBM Plex Mono",monospace;font-size:24px;font-weight:600;line-height:1.15}
+.stat.l{font-size:12.5px;color:var(--ink2);margin-top:4px;line-height:1.45}
+@media (max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}.stat:last-child{grid-column:span 2}}
+
+/* ---------- sections ---------- */
+section{padding:38px 0 6px}
+h2{font-family:"Noto Serif SC",serif;font-weight:700;font-size:27px;line-height:1.35;margin:0 0 6px;display:flex;align-items:baseline;gap:12px}
+h2.no{font-family:"IBM Plex Mono",monospace;font-size:15px;color:var(--accent);font-weight:600}
+h3{font-size:18px;font-weight:700;margin:26px 0 8px}
+p{margin:10px 0}
+.lead{color:var(--ink2)}
+ul{margin:8px 0;padding-left:22px}
+li{margin:6px 0}
+code{font-family:"IBM Plex Mono",monospace;font-size:.86em;background:var(--code-bg);padding:1px 6px;border-radius:5px;overflow-wrap:anywhere}
+.src{font-size:12.5px;color:var(--ink3)}
+.tag{display:inline-block;font-size:11.5px;font-weight:700;padding:1px 8px;border-radius:999px;vertical-align:2px;margin-right:6px;white-space:nowrap}
+.tag.p{background:var(--good-soft);color:var(--good)}
+.tag.s{background:var(--warn-soft);color:var(--warn)}
+.tag.u{background:var(--bad-soft);color:var(--bad)}
+
+/* hard findings */
+.findings{display:flex;flex-direction:column;gap:12px;margin-top:18px}
+.finding{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow);display:flex;gap:16px}
+.finding.num{font-family:"Noto Serif SC",serif;font-size:30px;font-weight:900;color:var(--accent);line-height:1.1;flex:0 0 auto}
+.finding h4{margin:2px 0 6px;font-size:17px}
+.finding p{margin:0;color:var(--ink2);font-size:15px}
+
+/* tables */
+.tbl{margin:14px 0;border:1px solid var(--line);border-radius:10px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:14.5px}
+@media (max-width:640px){
+  table{font-size:13.5px}
+  th,td{padding:8px 10px;overflow-wrap:anywhere}
+  th{white-space:normal}
+}
+th,td{padding:10px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+tr:last-child td{border-bottom:none}
+th{background:var(--surface2);font-weight:700;font-size:13.5px;white-space:nowrap}
+td.mono{font-size:13px}
+.yes{color:var(--good);font-weight:700}.no{color:var(--bad);font-weight:700}
+
+/* flow diagram */
+.flow{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;margin:16px 0}
+.flow.node{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:10px 14px;font-size:14px;box-shadow:var(--shadow);flex:1 1 150px}
+.flow.node b{display:block;font-size:14.5px}
+.flow.node span{color:var(--ink2);font-size:13px}
+.flow.arr{align-self:center;color:var(--accent);font-weight:700;font-size:18px;flex:0 0 auto}
+@media (max-width:640px){.flow{flex-direction:column}.flow.arr{transform:rotate(90deg);align-self:center}}
+
+.callout{border-radius:12px;padding:16px 20px;margin:16px 0;font-size:15px}
+.callout.warn{background:var(--warn-soft)}
+.callout.bad{background:var(--bad-soft)}
+.callout.good{background:var(--good-soft)}
+.callout p{margin:4px 0}
+.callout.t{font-weight:700}
+
+blockquote{margin:16px 0;padding:14px 20px;border-left:3px solid var(--accent);background:var(--surface);border-radius:0 10px 10px 0;font-size:15.5px}
+blockquote.src{display:block;margin-top:6px}
+
+/* mindmap */
+.mm-tools{display:flex;gap:8px;margin:14px 0 4px}
+.mm-tools button{font:inherit;font-size:13.5px;font-weight:500;padding:6px 14px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink);cursor:pointer}
+.mm-tools button:hover{border-color:var(--accent);color:var(--accent)}
+.mm{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;box-shadow:var(--shadow);overflow-x:auto}
+.mm ul{list-style:none;margin:0;padding-left:22px;position:relative}
+.mm>ul{padding-left:0}
+.mm li{margin:5px 0;position:relative}
+.mm ul ul::before{content:"";position:absolute;left:7px;top:-2px;bottom:10px;border-left:1px solid var(--line)}
+.mm.row{display:flex;align-items:baseline;gap:7px}
+.mm.tw{flex:0 0 auto;width:18px;height:18px;border:1px solid var(--line);border-radius:5px;background:var(--surface2);color:var(--ink2);font-size:12px;line-height:1;display:inline-flex;align-items:center;justify-content:center;cursor:pointer;transform:translateY(3px);padding:0;font-family:inherit}
+.mm.tw:hover{border-color:var(--accent);color:var(--accent)}
+.mm.leaf-dot{flex:0 0 auto;width:18px;text-align:center;color:var(--ink3);transform:translateY(1px)}
+.mm.txt{font-size:14.5px}
+.mm.root>.row>.txt{font-family:"Noto Serif SC",serif;font-weight:900;font-size:19px}
+.mm.l1>.row>.txt{font-weight:700;font-size:15.5px}
+.mm.note{color:var(--ink3);font-size:13px}
+.mm li.closed>ul{display:none}
+
+.cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:14px 0}
+@media (max-width:640px){.cards{grid-template-columns:1fr}}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;box-shadow:var(--shadow)}
+.card h4{margin:0 0 8px;font-size:16px}
+.card ul{padding-left:18px;margin:4px 0}
+.card li{font-size:14.5px;margin:4px 0}
+
+.versions{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.ver-chip{background:var(--surface);border:1px solid var(--line);border-radius:999px;padding:5px 14px;font-size:13.5px}
+.ver-chip b{font-family:"IBM Plex Mono",monospace;font-weight:600}
+
+footer{margin-top:48px;padding:26px 0 44px;border-top:1px solid var(--line);color:var(--ink3);font-size:13.5px}
+footer ul{padding-left:18px}
+footer li{margin:3px 0;font-size:13px}
+</style>
+</head>
+<body>
+<nav class="toc" aria-label="目录">
+<div class="wrap">
+<a href="#findings">硬发现</a>
+<a href="#mindmap">思维导图</a>
+<a href="#basics">公司</a>
+<a href="#arch">架构</a>
+<a href="#ideas">产品理念</a>
+<a href="#license">许可</a>
+<a href="#selfhost">自托管</a>
+<a href="#traction">热度</a>
+<a href="#compete">竞争</a>
+<a href="#risks">风险</a>
+<a href="#open">未核实</a>
+</div>
+</nav>
+
+<header class="hero">
+<div class="wrap">
+<div class="kicker">开源项目深度调研 · OPEN-SOURCE RESEARCH</div>
+<h1>Nuphos：把编程 agent 从单机终端搬进团队的「房间」</h1>
+<div class="en-sub">github.com/nuphos/nuphos · nuphos.ai · The agent workspace for your team</div>
+<p class="verdict">一句话结论：Nuphos 是 <strong>Zeabur Inc.</strong> 的产品——会话即多人可加入的「房间」、会话不绑机器可在三种 runtime 间迁移、团队共享技能/记忆/云账号，agent 还能直接操作生产系统。它与 paperclip 是<strong>品类之别</strong>：paperclip 是坐在 agent 之上的治理控制面，Nuphos 是会话本身居住的执行面。许可证经逐字核对是<strong>标准 Apache-2.0</strong>，GitHub 的「Other」标签不是 source-available 的证据。</p>
+<p class="meta-line">调研日期 2026-10-11 · 数据截至当日 · 来源按仓库/官网原文与媒体/目录站分级标注，链接见各节与文末</p>
+<div class="stats">
+<div class="stat"><div class="n">45</div><div class="l">GitHub stars（仓库创建于 2026-10-01，仅 10 天）</div></div>
+<div class="stat"><div class="n">152</div><div class="l">commits · 6 forks · 1 watcher</div></div>
+<div class="stat"><div class="n">21</div><div class="l">releases / 10 天，约 2 个每天，全线未到 1.0</div></div>
+<div class="stat"><div class="n">5</div><div class="l">端：backend / desktop / runtime / iOS / CLI</div></div>
+<div class="stat"><div class="n">Apache-2.0</div><div class="l">根 LICENSE 逐字核对为标准全文；商标另行保留</div></div>
+</div>
+</div>
+</header>
+
+<main class="wrap">
+
+<!-- ============ 硬发现 ============ -->
+<section id="findings">
+<h2><span class="no">§0</span>五条硬发现</h2>
+<p class="lead">先给技术读者最承重的五条；细节与出处在后面各节。</p>
+<div class="findings">
+<div class="finding"><div class="num">1</div><div>
+<h4>许可证是真 Apache-2.0，「Other」不是藏条款的证据</h4>
+<p>根目录 LICENSE 逐字核对为标准 Apache-2.0 全文，无 BSL/ELv2/Commons Clause 类文件；TRADEMARK.md 明说「代码是 Apache-2.0，名字不是」。真正不开的在仓库之外：Android 客户端、托管 runtime 的置备/备份/运维工具、多团队单实例、Google 登录——标准 open-core 形态。「Other」的确切成因官方未说明；「多许可证成分导致许可证探测无法自动归类」是基于文件证据的推断（§4）。</p>
+</div></div>
+<div class="finding"><div class="num">2</div><div>
+<h4>真正的技术赌注：把 ACP 从本地 stdio 改造成网络协议</h4>
+<p>ACP 本是 Zed/JetBrains 为「编辑器 ↔ 本地 agent 子进程」设计的协议。Nuphos 经 OpenAB 网关把它变成 WebSocket 上的远程会话总线（<code>ws(s)://&lt;host&gt;:8080/acp</code>），后端对长寿命 runtime 容器打开 ACP 会话、流式转发——适配器还要打补丁并以 SHA-256 钉住上游产物，上游一升级构建就失败。</p>
+</div></div>
+<div class="finding"><div class="num">3</div><div>
+<h4>「仓库 10 天」≠「产品 10 天」：前身叫 Atlas</h4>
+<p>托管产品 2026 年夏已以「AI 原生 DevOps 工作区」面世（Product Hunt 2026-08-14 上线、EveryDev 8 月收录）；前身仓库 zeabur/atlas 自述为其源码，后端提示词至今叫 atlas-agent-system.md、环境变量仍是 ATLAS_*。2026-10-01 只是开源化 + 重新定位的时点。</p>
+</div></div>
+<div class="finding"><div class="num">4</div><div>
+<h4>与 paperclip 是品类之别，不是功能之争</h4>
+<p>paperclip 做组织图、预算、心跳的「公司治理」，控制面只编排不执行；Nuphos 没有任何雇佣隐喻，做的是多人实时同处一室、共同驾驶一个正在执行的 turn，加上跨机迁移与生产系统 GUI。量级也悬殊：paperclip 约 97.2k stars（二手统计），Nuphos 45。</p>
+</div></div>
+<div class="finding"><div class="num">5</div><div>
+<h4>安全模型一句话：共享会话 = 共享权限</h4>
+<p>runtime README 自己警告——团队密钥是「挡在持有你工作区云凭据的 agent 前面的唯一东西」。能 reply 的人就能以会话作用域凭据驾驶 agent；队友的消息会在机主的本地机器上以机主身份执行命令。AWS assume-role / GCP impersonation 的触达面，是所连账号 CLI 能做的一切。</p>
+</div></div>
+</div>
+</section>
+
+<!-- ============ 思维导图 ============ -->
+<section id="mindmap">
+<h2><span class="no">§M</span>交互思维导图</h2>
+<p class="lead">点节点前的 + / − 折叠展开，全貌与细节一图看完。</p>
+<div class="mm-tools">
+<button type="button" id="mm-expand">全部展开</button>
+<button type="button" id="mm-collapse">收起到二级</button>
+</div>
+<div class="mm" id="mm-root"></div>
+</section>
+
+<!-- ============ 1 公司 ============ -->
+<section id="basics">
+<h2><span class="no">§1</span>项目与公司</h2>
+<p><span class="tag p">一手</span>产品定义：面向团队的 agent 工作区——在多人、多机器、多工具间运行、管理、协作编程 agent。出发点是「编程 agent 默认是单人模式」，Nuphos 让团队来运行它们。官网当前定位（2026-10-11 实时打开）：把 Claude Code 与 Codex 带进共享工作区，协作、共享工具与记忆、在桌面或手机上接续同一会话；页脚自称 SOC 2 Certified，只有 Contact sales，没有定价入口。</p>
+<ul>
+<li><span class="tag p">一手</span><b>公司主体</b>：NOTICE 文件署名 Copyright 2026 <b>Zeabur Inc.</b>，自称软件开发方；TRADEMARK.md 称 Nuphos 名称与 logo 为 Zeabur Inc. 商标。</li>
+<li><span class="tag s">二手</span><b>创始人</b>：Zeabur 创始人兼 CEO 为 Yuanlin Lin（林沅霖，GitHub 名 yuaanlin——正是 NOTICE 首个提交的作者），浙江大学 CS 背景。<span class="src">此条来自搜索结果摘要转述，置信度中。</span></li>
+<li><span class="tag s">二手</span><b>母公司背景</b>：PitchBook 称 Zeabur 成立于 2022 年、总部登记在 Newark, DE、累计融资约 230 万美元，投资方含 500 Global、Baidu Ventures、MiraclePlus；其员工数等字段明显陈旧，不可尽信。<b>未找到 Nuphos 单独融资信息</b>——应理解为 Zeabur 的产品线，而非独立融资主体。</li>
+</ul>
+<h3>时间线：两个「生日」别搞混</h3>
+<div class="flow">
+<div class="node"><b>2026 年夏</b><span>托管产品以「AI 原生 DevOps 工作区」公开面世；内部代号 Atlas</span></div>
+<div class="arr">→</div>
+<div class="node"><b>2026-08-14 前后</b><span>Product Hunt 上线当日榜（第三方汇总称约 296 票）；EveryDev.ai 8 月收录；官网博客 8 月已有文章</span></div>
+<div class="arr">→</div>
+<div class="node"><b>2026-10-01 18:31Z</b><span>开源仓库 nuphos/nuphos 创建，重新定位为「团队 agent 工作区」</span></div>
+<div class="arr">→</div>
+<div class="node"><b>2026-10-10</b><span>Desktop 已迭代至 v0.77.0；其 v0.73.1 发布说明自称是公共仓库的第一个完整 Desktop 发布</span></div>
+</div>
+<p><span class="tag p">一手</span><b>托管版 vs 开源仓库</b>：Nuphos Cloud 提供多团队单实例、托管 runtime 置备、托管备份、运维工具、Google 登录；开源仓库给出 backend / desktop / runtime / iOS / CLI 全部主要代码，自托管为单团队部署（详见 §5）。</p>
+</section>
+
+<!-- ============ 2 架构 ============ -->
+<section id="arch">
+<h2><span class="no">§2</span>架构：五个组件 + 一个被改造的协议</h2>
+<div class="tbl"><table>
+<tr><th>路径</th><th>内容</th><th>技术栈 / 备注</th></tr>
+<tr><td class="mono">apps/backend</td><td>账号、团队、会话、runtime 注册表、集成</td><td>Bun / Hono API</td></tr>
+<tr><td class="mono">apps/desktop</td><td>工作区本体客户端</td><td>Electron / Vite / React，Node 22 + pnpm 10</td></tr>
+<tr><td class="mono">apps/runtime</td><td>agent 容器镜像、适配器，独立发版</td><td>镜像发布于 ghcr.io/nuphos/runtime</td></tr>
+<tr><td class="mono">apps/ios</td><td>离开桌面后接续会话</td><td>SwiftUI，已上架 App Store，独立版本线</td></tr>
+<tr><td class="mono">apps/cli</td><td>README 表未列，但仓库存在（已发 v0.3.0）</td><td>TUI + 可脚本化命令；<code>nuphos agent</code> 把本机变成一个本地 agent</td></tr>
+</table></div>
+
+<h3>一个 turn 如何执行（技术核心）</h3>
+<p><span class="tag p">一手</span>后端自己不跑 agent：runtime 是<b>长寿命容器、内含恰一个 agent</b>，后端对 runtime 打开一个 ACP 会话并流式转发对话。镜像分三层：</p>
+<div class="flow">
+<div class="node"><b>① OpenAB 网关</b><span>外部开源项目 openabdev/openab，以 submodule 引入；拥有容器，经网络接受 ACP、监督 agent、agent 重启后保持会话存活。端点 ws(s)://&lt;host&gt;:8080/acp</span></div>
+<div class="arr">→</div>
+<div class="node"><b>② agent CLI + ACP 适配器</b><span>Claude 用 @agentclientprotocol/claude-agent-acp（内含 Claude Agent SDK 的 Claude Code CLI）；Codex 用 @openai/codex + @agentclientprotocol/codex-acp</span></div>
+<div class="arr">→</div>
+<div class="node"><b>③ Nuphos 工具集层</b><span>git/gh/kubectl 常驻；aws/gcloud/mongosh/psql 等为首次使用才下载钉版的 shim</span></div>
+</div>
+<ul>
+<li><span class="tag p">一手</span><b>适配器补丁</b>：构建时给适配器打补丁（发布会话状态、桥接 HTTP MCP、Codex 回合内 steering 等），补丁以被改上游产物的 <b>SHA-256 钉住</b>——上游升级会使构建失败，直至人工复核。这是 ACP 赌注的真实维护成本。</li>
+<li><span class="tag p">一手</span><b>超出预期的 agent 支持</b>：除 Claude Code / Codex 外，runtime README 还列 Grok Build（xAI）、Google Antigravity、OpenCode——后三者原生说 ACP、无需适配器，只加 acp-shim；Grok/Antigravity 是专有软件不在镜像内，首次使用时从厂商下载。Desktop v0.77.0 亦确认 OpenCode 成为新的 Cloud agent。</li>
+<li><span class="tag p">一手</span><b>镜像零凭据</b>：镜像内无任何凭据、无提示词；系统提示词、MCP 服务器、技能与每回合凭据由后端经 ACP 在运行时下发，同一镜像服务所有工作区。容器以 uid/gid 1000、丢弃全部 capabilities 运行；<code>/acp</code> 拒绝无团队/部署密钥的升级请求（401），控制台只存团队密钥的 SHA-256 摘要；<code>/home/node</code> 必须持久卷，内含.claude/.codex 登录态。</li>
+<li><span class="tag p">一手</span><b>认证 = 用你自己的订阅</b>：Claude 由 runtime 控制台驱动 <code>claude auth login</code>（粘贴授权码，凭据留在容器卷）；Codex 走设备码登录（隔离的 CODEX_HOME）。Nuphos 不收集 API key，<b>无额外模型费用</b>。</li>
+</ul>
+
+<h3>后端与数据栈</h3>
+<ul>
+<li><span class="tag p">一手</span>用户、团队、Google OAuth 与 JWT 会话存于 <b>MongoDB</b>（单节点副本集 rs0，因事务需要）；文件走 <b>S3 兼容对象存储</b>（自托管用 RustFS）；托管版另有 Redis——无 Redis 时 cron、后台队列、审计日志封存被禁用，后端退化为单副本内存模式。</li>
+<li><span class="tag p">一手</span>后端自带一个<b>内置 agent</b>（系统提示词文件至今名为 atlas-agent-system.md）：通过已加载的 skill 操作团队连接的系统；内置 skill 是 SKILL.md + 脚本（如 asana、gitlab、zeabur），脚本用 NUPHOS_TOKEN 调后端 API 取绑定账号凭据。</li>
+<li><span class="tag p">一手</span>后端自身的模型调用（会话标题、仪表盘洞察）走 <b>AWS Bedrock</b>；无 Bedrock 密钥时这些功能不可用，但 runtime 上的聊天不受影响。</li>
+</ul>
+
+<h3>会话持久与迁移</h3>
+<p><span class="tag p">一手</span>会话状态由后端持有（MongoDB），runtime 只是可替换的执行器——同一会话可在<b>本地机 / 自有远程机 / Nuphos 托管云</b>之间切换并继续，迁移后模型选择器切换为新 agent 的模型列表。本地形态由 CLI <code>nuphos agent</code> 或桌面端提供：首次使用下载本版 runtime 到 ~/.local/share/nuphos/runtime；Claude 为 Nuphos 单独登录一次（与自用终端隔离），Codex 用既有 codex login。</p>
+<div class="callout warn"><p><span class="t">本地 agent 的关键语义（CLI README 明示）：</span>只有机主能在本地机上发起会话；但会话一旦被移上这台机器，<b>团队任何人都能续聊，且他们的消息会以机主身份在这台机器上执行命令</b>。</p></div>
+<p><span class="tag p">一手</span>Desktop 细节：electron-updater 每 6 小时检查更新；macOS 构建签名+公证，Windows/Linux 未签名；分屏快捷键 ⌘D / ⌘⇧D，内置浏览器标签页。iOS 为 SwiftUI，已上架 App Store（v0.8.0）；Android 客户端存在但尚未开源。</p>
+</section>
+
+<!-- ============ 3 产品理念 ============ -->
+<section id="ideas">
+<h2><span class="no">§3</span>核心产品理念</h2>
+<h3>(a) 会话即「房间」：多人共驾</h3>
+<p><span class="tag p">一手</span>README 开篇即称编程 agent 默认单人、单机、单终端；Nuphos 中会话如同 Notion 页面可邀请——多人对同一 agent 说话、看同一批工具调用、共同转向。会话级权限已产品化（Desktop v0.77.0）：每会话可设「仅受邀者 / 全队可看 / 全队可看可回」，受邀者分 Can reply / Can manage 两级，仅所有者能改权限，Can manage 者可迁移会话与更换凭据。</p>
+<h3>(b) 会话比机器长寿</h3>
+<p><span class="tag p">一手</span>合上笔记本，回合在远程/云 runtime 继续，手机接续；三种 runtime 形态可互迁（见 §2）。</p>
+<h3>(c) 团队共享技能与工具</h3>
+<p><span class="tag p">一手</span>授权一次，全队每个 agent 同步获得，不再人人往自己机器上粘 token。runtime 侧由 nuphos-sync-skills 拉取工作区技能包并原子替换；托管 pod 由置备器推送，自托管按会话执行。</p>
+<h3>(d) 内置团队记忆</h3>
+<p><span class="tag p">一手</span>跨队友、跨 agent、跨会话内置，无需另装 MCP 服务器；桌面端有 Memories 入口，路由为 <code>/teams/&lt;teamId&gt;/agent/memories</code>，以团队为作用域、存于后端（MongoDB 体系）。<span class="tag s">二手</span>EveryDev 称其为持续积累的团队知识库（服务、环境、工作流、运维历史）。<span class="tag u">未核实</span><b>记忆的具体数据表示（自由文本 / 结构化条目 / 向量检索）在公开 README、docs 与官网均未披露。</b></p>
+<h3>(e) 触发器：没人说话也能开工</h3>
+<p><span class="tag p">一手</span>cron 定时或 webhook 事件可自主启动一个回合。注意：自托管 Compose 栈无 Redis 时 cron 被禁用（§5）。</p>
+<h3>(f) 把 agent 放进团队频道</h3>
+<p><span class="tag p">一手</span>一步把同一 agent 放进 Slack / Discord 频道；后续版本做了话题与会话互相绑定、发言者归属显示。<span class="tag s">二手</span>早期托管版还宣称 Lark 与 iMessage。</p>
+<h3>(g) 专业 GUI 面板：agent 操作的是账号本身</h3>
+<p><span class="tag p">一手</span>Kubernetes、Grafana（仪表盘/告警/日志/链路）、GitHub、Linear 为一等 GUI，另有 GitLab、AWS（含 ECS）、GCP、Cloudflare、Linode、MongoDB 与 SQL 连接，可分屏多会话同看。关键点：面板不是截图——<b>agent 操作面板背后的账号本身</b>，触达面是所连账号 CLI 能做的一切。</p>
+<ul>
+<li><span class="tag p">一手</span><b>云连接（BYOC）</b>：AWS 为跨账号 assume-role，GCP 为服务账号模拟（impersonation）；信任主体是「你的部署」的身份——自托管实例把账号绑到自己，而非 nuphos.ai。</li>
+<li><span class="tag p">一手</span><b>官网博客的设计原则</b>：从只读授权起步、会话获得作用域化访问、受保护变更先出计划等人工批准、动作可归因、保留审计。</li>
+<li><span class="tag s">二手</span>「会话级细粒度 IAM、短期最小权限凭据」等更细说法见 EveryDev 转述，未在仓库文档中逐项找到原文。</li>
+</ul>
+</section>
+
+<!-- ============ 4 许可 ============ -->
+<section id="license">
+<h2><span class="no">§4</span>许可：开了哪一层</h2>
+<div class="callout good"><p><span class="t">结论：</span>称其为「Apache-2.0 开源 + 商标保留 + 托管运维层闭源」的标准 open-core 形态是准确的；GitHub 的「Other (NOASSERTION)」标签不构成其为 source-available 的证据。</p></div>
+<ul>
+<li><span class="tag p">一手·逐字核对</span>根目录 LICENSE 是标准 Apache License 2.0（2004 年 1 月版）<b>全文</b>，无附加条款、无例外段落。</li>
+<li><span class="tag p">一手</span>NOTICE 仅 323 字节 / 6 行有效内容：署名 Zeabur Inc. 2026 年版权，并声明商标不随 Apache-2.0 授予，无额外限制。</li>
+<li><span class="tag p">一手</span>TRADEMARK.md 明说「代码是 Apache-2.0，名字不是」，自称只是复述 Apache-2.0 第 6 条本意：描述性使用（fork of Nuphos、自托管 Nuphos、评论批评、nuphos-helm-chart 式从属命名）无需许可；把自己的产品/托管服务/域名命名为 Nuphos 或用其 logo 冒充官方则需许可；分发修改版作自有产品须改名。CONTRIBUTING.md 亦称贡献与仓库其余部分同为 Apache-2.0。</li>
+<li><span class="tag p">一手</span><b>为何 GitHub 标 Other</b>：已读一手文件中未找到任何非 Apache 的第一方许可证（无 BSL / ELv2 / Commons Clause / 专有 EULA）。合理解释是许可证探测因多许可证成分无法自动归类——runtime 镜像捆绑第三方软件（含非开源的 @anthropic-ai/claude-code 与 Claude Agent SDK，按 Anthropic 商业条款分发，runtime README 的 Licence 一节专门列明），且 Grok/Antigravity 运行时从厂商下载。<i>此为基于文件证据的推断，探测失败的确切原因官方未说明。</i></li>
+</ul>
+<div class="cards">
+<div class="card"><h4>开的（Apache-2.0，在仓库内）</h4>
+<ul><li>apps/backend（Bun/Hono API）</li><li>apps/desktop（Electron 客户端）</li><li>apps/runtime（容器镜像、适配器）</li><li>apps/ios（SwiftUI 客户端）</li><li>apps/cli（TUI 与命令）</li></ul>
+</div>
+<div class="card"><h4>不开的（均有一手出处）</h4>
+<ul><li>Android 客户端——存在但尚未开源（README）</li><li>托管 runtime 置备、托管备份、运维工具（README）</li><li>多团队单实例——仅托管版（README）</li><li>Google 登录——走 nuphos.ai 页面，仅对 Cloud 有效（README）</li><li>镜像内的厂商 agent 本体——按各自商业条款（runtime README）</li><li>Nuphos 名称与 logo 商标（TRADEMARK.md）</li></ul>
+</div>
+</div>
+</section>
+
+<!-- ============ 5 自托管 ============ -->
+<section id="selfhost">
+<h2><span class="no">§5</span>自托管：三条路径与一条硬约束</h2>
+<p><span class="tag p">一手</span><b>硬约束：一个部署一个团队</b>——团队是会话、技能、记忆、集成的统一作用域；多团队共存只在托管产品。</p>
+<ul>
+<li><b>Zeabur</b>：一键按钮部署数据栈（agent runtime 须在单独项目另行部署；模板 deploy/zeabur/template.yaml）。东家自己的平台，吃自家狗粮。</li>
+<li><b>Railway</b>：目前为 CLI 部署指南而非发布的一键模板；但 Desktop v0.77.0 的 agent 设置里已链 Railway 一键模板——两处口径以各自发布日期为准。</li>
+<li><b>Docker Compose</b>：deploy/compose 一条命令起全套：MongoDB 8 + RustFS + backend + 一个 Claude Code runtime。</li>
+</ul>
+<p><span class="tag p">一手</span>自托管可用项：邮箱 OTP 登录对任意后端有效；桌面/iOS 登录页有「Self-hosted? Set API endpoint」入口（或用 NUPHOS_API_URL 启动指定）；runtime 用一次性配对码从控制台连入团队，后端换取团队专属密钥；云账号绑定到自托管实例自身身份。</p>
+<div class="tbl"><table>
+<tr><th>能力</th><th>自托管</th><th>托管 Nuphos Cloud</th></tr>
+<tr><td>backend / desktop / iOS / runtime 代码</td><td class="yes">✔ Apache-2.0</td><td class="yes">✔</td></tr>
+<tr><td>团队数 / 部署</td><td>1</td><td>多</td></tr>
+<tr><td>托管 runtime 置备、备份、运维工具</td><td class="no">✘</td><td class="yes">✔</td></tr>
+<tr><td>Google 登录</td><td class="no">✘（用邮箱 OTP）</td><td class="yes">✔</td></tr>
+<tr><td>cron 触发（Compose 栈）</td><td class="no">✘（无 Redis）</td><td class="yes">✔</td></tr>
+</table></div>
+<div class="callout warn"><p><span class="t">Compose 栈的已知限制（官方自列）：</span>无 Redis → cron 调度、后台线程队列、审计日志封存禁用；无 Bedrock 密钥 → 后端标题/洞察类模型调用不可用；/admin 未配置；该栈 NODE_ENV=development、端口仅绑 127.0.0.1，明确警告勿公开暴露；托管（managed）agent 在此栈跑不了——它们是后端置备器创建的 Kubernetes Deployment，本地仅能用 OrbStack K8s 测试；runtime 镜像目前仅 amd64，Apple Silicon 下靠模拟运行。</p></div>
+</section>
+
+<!-- ============ 6 热度 ============ -->
+<section id="traction">
+<h2><span class="no">§6</span>热度与生态：快，但还小</h2>
+<p><span class="tag p">一手</span>仓库数据（2026-10-11，GitHub 仓库页）：创建于 2026-10-01T18:31Z；<b>45 stars、6 forks、1 watcher、152 commits、21 releases、25 tags</b>；许可证字段 Other (NOASSERTION)。</p>
+<div class="versions">
+<span class="ver-chip">Desktop <b>v0.77.0</b></span>
+<span class="ver-chip">Backend <b>v0.86.0</b></span>
+<span class="ver-chip">Runtime <b>v0.1.19</b></span>
+<span class="ver-chip">iOS <b>v0.8.0</b></span>
+<span class="ver-chip">CLI <b>v0.3.0</b></span>
+</div>
+<ul>
+<li><span class="tag p">一手</span><b>分组件版本线</b>：10 天 21 个 release、约 2 个/天，全部未到 1.0；Desktop 发布说明附组件兼容矩阵（如 v0.77.0 需 Backend ≥ v0.86.0）——迭代极快，churn 也是真风险。</li>
+<li><span class="tag p">一手</span><b>开发高度 agent 驱动</b>：Issues 开放数为 0；PR 为 13 开放 / 169 已关闭（10 天内），开放 PR 多由 nuphos[bot] 与 dependabot 提出。<b>外部社区贡献尚无证据。</b></li>
+<li><span class="tag p">一手</span><span class="tag s">二手</span><b>渠道</b>：README 徽章链 X、Discord（经 nuphos.ai 跳转）与 App Store iOS 应用；官网有 Blog 与 Changelog。Product Hunt 产品页存在（747 followers），但 2026-08 的上线属托管 DevOps 定位时期。<b>未检索到 Hacker News 的 Show HN 或实质讨论帖；YouTube 覆盖未核实。</b></li>
+</ul>
+<h3>定价：官网没有，旧价仅供参考</h3>
+<p><span class="tag p">一手·实时核查</span><code>nuphos.ai/pricing</code> 于 2026-10-11 打开为 <b>404</b>，官网导航无定价页，仅 Download 与 Contact sales。<span class="tag s">二手</span>EveryDev 保存了约 2026-08 收录的旧定价：Free（个人、BYO agent）/ Dev $29/月 / Team $99/月 / Business $299/月 / Scale $999/月 / Enterprise 定制（含 SSO、自托管、BYO 模型 key），按 agent 用量、连接器数、审计保留期（14 天至 1 年）分层。</p>
+<div class="callout warn"><p>该旧定价对应「托管 agent 用量」模式，与现行「用你自己的订阅、无额外模型费」定位存在张力，<b>应视为已下线或待更新，不可当作现行价格引用</b>。</p></div>
+</section>
+
+<!-- ============ 7 竞争 ============ -->
+<section id="compete">
+<h2><span class="no">§7</span>竞争格局</h2>
+<div class="tbl"><table>
+<tr><th>产品</th><th>形态</th><th>与 Nuphos 的关键差异</th></tr>
+<tr><td><b>paperclip</b></td><td>开源（MIT）agent「公司」控制面：组织图、目标层级、工单、预算/成本、审批治理、心跳监控；只编排不执行</td><td>Nuphos 无组织图/预算/雇佣隐喻，做会话本身：多人实时共驾一个正在执行的 turn、跨机迁移、生产系统 GUI 与云操作。量级悬殊：约 97.2k stars（二手） vs 45</td></tr>
+<tr><td><b>Multica</b></td><td>开源托管 agent 平台：把 issue 像分给同事一样分给 agent，agent 自行认领、汇报、阻塞升级，技能可复利沉淀，含 Squads 路由层</td><td>团队论最接近的竞品，但中心是「看板/issue 异步协作」，不是「同一会话的实时多人房间 + runtime 迁移 + 基础设施 GUI」</td></tr>
+<tr><td><b>Conductor</b>（Melty Labs，YC S24）</td><td>免费 macOS 应用，并行跑 Claude Code/Codex/Cursor，每 agent 一个隔离 worktree，diff 审查与 PR 流，闭源</td><td>单人、单机、并行编排；无团队共享会话、无云端续跑、无手机端</td></tr>
+<tr><td><b>Vibe Kanban</b>（BloopAI）</td><td>开源看板：以 issue 规划、workspace 跑 agent、审查 diff，支持 10+ agent；约 28.3k stars（二手）</td><td>其公司 Bloop 于 2026-04-10 关停，项目已宣布 sunsetting、转社区维护——「看板编排」路线退潮的标志</td></tr>
+<tr><td><b>Sculptor</b>（Imbue）</td><td>MIT 开源桌面应用：并行 agent 各自容器/worktree，Pairing Mode 把容器改动实时同步回本地 IDE</td><td>本地单人、IDE 配对导向；无团队会话与托管 runtime</td></tr>
+<tr><td><b>Terragon</b>（已关停）</td><td>云端后台 agent 编排：云沙箱并行跑 Claude Code/Codex，BYO 订阅，Slack/GitHub 触发</td><td>2026-01-16 关停后以 Apache-2.0 快照开源、无维护。与 Nuphos 形态最像的历史玩家，其死亡是该品类商业化难度的直接先例</td></tr>
+<tr><td><b>厂商自有团队/云功能</b></td><td>Claude Code 云会话 2026-09-23 转正（云端续跑、多端操控、自托管环境 Beta）；Codex 有云任务（隔离环境并行、团队管理）</td><td>厂商正在吸收「会话比笔记本长寿」，但都是单厂商围墙：不跨 Claude/Codex 共享技能、记忆与房间，也不操作客户的第三方基础设施 GUI</td></tr>
+<tr><td><b>ACP 生态</b></td><td>ACP 由 Zed 于 2025-08 发起、与 JetBrains 共同维护，被喻为 agent 界的 LSP；agent 注册表约 50 个</td><td>多数采用者是「编辑器 ↔ 本地 agent 子进程（stdio）」；Nuphos 把 ACP 经 OpenAB 变成 WebSocket 网络协议，用作远程 runtime 与后端之间的团队化会话总线——这是它真正的协议赌注</td></tr>
+</table></div>
+<p><b>Nuphos 的差异化（综合判断）</b>：① 会话即房间的实时多人共驾，而非看板/组织图式异步分工；② 会话与执行机解耦、三态 runtime 迁移、iOS 接续；③ 工作区同时是生产运维台，连接身份属于客户自己的云账号（BYOC）；④ 跨厂商（ACP 多 agent）+ 团队级技能/记忆共享。<b>四点同时具备者，在已核竞品中没有第二个。</b></p>
+</section>
+
+<!-- ============ 8 风险 ============ -->
+<section id="risks">
+<h2><span class="no">§8</span>批评与风险</h2>
+<h3>年轻与体量</h3>
+<p><span class="tag p">一手</span>开源仅 10 天、45 stars、外部贡献无证据；但产品自 2026 年夏已运营，别把「仓库 10 天」误读为「产品 10 天」。全线版本号 &lt;1.0、约 2 release/天、组件间需兼容矩阵，API 与行为 churn 风险高。内部代号 Atlas 在代码、提示词、环境变量中大量残留，显示改名与转定位仓促。</p>
+<h3>安全攻击面（最实质的风险）</h3>
+<blockquote>团队密钥是「挡在持有你工作区云凭据的 agent 前面的唯一东西」。<span class="src">—— runtime README 自述</span></blockquote>
+<ul>
+<li><span class="tag p">一手</span><b>共享会话即共享权限</b>：能 reply 的人就能以该会话的作用域凭据驾驶 agent；Can manage 者还能迁移会话、更换凭据。</li>
+<li><span class="tag p">一手</span><b>本地 agent 语义凶险</b>：队友的消息会在机主机器上以机主身份执行命令（CLI README 明示，见 §2）。</li>
+<li><span class="tag p">一手</span><b>注入面直达生产</b>：agent 的触达面是所连云账号 CLI 的全部能力；AWS assume-role / GCP impersonation 一旦作用域过宽，Slack/Discord/Linear 等外部内容经 prompt injection 即可触达生产系统；团队共享记忆还带来跨会话的记忆投毒面。</li>
+<li><span class="tag p">一手</span><b>缓解多为原则、强制细节披露有限</b>：只读起步、计划审批、作用域会话、审计等缓解项多见于官网博客的原则性表述；自托管 Compose 栈连审计封存都因无 Redis 被禁用。SECURITY.md 的范围划分（团队隔离、沙箱逃逸、桌面 IPC、供应链）本身即承认了这组攻击面的存在。</li>
+</ul>
+<h3>依赖与先例</h3>
+<ul>
+<li><span class="tag p">一手</span><b>ACP 适配器依赖</b>：补丁以 SHA-256 钉住上游产物，上游（Claude Agent SDK / Codex）每次升级都要人工复核适配——协议赌注的对价是持续的跟随成本。</li>
+<li><span class="tag s">二手</span><b>品类先例不乐观</b>：形态最像的 Terragon 已于 2026-01-16 关停，看板路线的 Vibe Kanban 母公司 Bloop 已关停、项目 sunset——「agent 工作区」这个品类的商业化难度有直接前科。</li>
+<li><span class="tag s">二手</span><b>厂商围墙在合拢</b>：Claude Code 云会话已转正、Codex 云任务在推进，厂商自己正在吸收「会话跨机续跑」；Nuphos 的窗口在于跨厂商与团队协作，但窗口不会一直开着。</li>
+</ul>
+</section>
+
+<!-- ============ 未核实 ============ -->
+<section id="open">
+<h2><span class="no">§?</span>未核实与开放问题</h2>
+<p class="lead">以下事项在公开来源中查不到或证据不足，明确列出，不做推断填充：</p>
+<ul>
+<li><b>团队记忆的数据表示</b>——自由文本、结构化条目还是向量检索？README、docs、官网均未披露。</li>
+<li><b>现行定价</b>——官网定价页 404、无公开价格；EveryDev 的旧定价与现行定位冲突，不可引用为现价。</li>
+<li><b>Nuphos 单独融资</b>——未找到；母公司 Zeabur 的 PitchBook 数据部分字段明显陈旧。</li>
+<li><b>创始人信息</b>——Yuanlin Lin 一条来自二手摘要转述，置信度中。</li>
+<li><b>GitHub「Other (NOASSERTION)」的确切成因</b>——官方未说明；「多许可证成分导致探测失败」是基于文件证据的推断。</li>
+<li><b>Hacker News 讨论 / YouTube 覆盖</b>——未检索到 / 未核实。</li>
+<li><b>订阅条款合规性</b>——在远程容器中以用户订阅运行 Claude Code / Codex 是否完全符合 Anthropic / OpenAI 条款，本次调研未取得厂商侧的明确表态。</li>
+<li><b>会话级 IAM 等细粒度安全机制的强制执行细节</b>——二手转述与博客原则之外，仓库文档披露有限。</li>
+</ul>
+</section>
+</main>
+
+<footer>
+<div class="wrap">
+<p><b>主要来源</b>（仓库与官网原文 / 媒体与目录站；调研日期 2026-10-11）</p>
+<ul>
+<li>仓库主页与 README：<a href="https://github.com/nuphos/nuphos">github.com/nuphos/nuphos</a> · <a href="https://github.com/nuphos/nuphos/blob/HEAD/README.md">README.md</a></li>
+<li>许可证三件套：<a href="https://github.com/nuphos/nuphos/blob/HEAD/LICENSE">LICENSE</a> · <a href="https://github.com/nuphos/nuphos/blob/main/NOTICE">NOTICE</a> · <a href="https://github.com/nuphos/nuphos/blob/HEAD/TRADEMARK.md">TRADEMARK.md</a> · <a href="https://github.com/nuphos/nuphos/blob/HEAD/CONTRIBUTING.md">CONTRIBUTING.md</a></li>
+<li>runtime / desktop / cli：<a href="https://github.com/nuphos/nuphos/blob/HEAD/apps/runtime/README.md">apps/runtime/README.md</a> · <a href="https://github.com/nuphos/nuphos/blob/HEAD/apps/desktop/README.md">apps/desktop/README.md</a> · <a href="https://github.com/nuphos/nuphos/blob/HEAD/apps/cli/README.md">apps/cli/README.md</a></li>
+<li>自托管：<a href="https://github.com/nuphos/nuphos/blob/HEAD/deploy/compose/README.md">deploy/compose/README.md</a> · 发布：<a href="https://github.com/nuphos/nuphos/releases">releases</a> · <a href="https://github.com/nuphos/nuphos/releases/tag/v0.73.1">v0.73.1</a> · <a href="https://github.com/nuphos/nuphos/issues">issues</a> · <a href="https://github.com/nuphos/nuphos/pulls">pulls</a></li>
+<li>官网：<a href="https://nuphos.ai/">nuphos.ai</a> · 博客：<a href="https://nuphos.ai/blog/best-kubernetes-gui">best-kubernetes-gui</a> · 定价页（2026-10-11 为 404）：<a href="https://nuphos.ai/pricing">nuphos.ai/pricing</a></li>
+<li>前身仓库：<a href="https://github.com/zeabur/atlas">zeabur/atlas</a> · <a href="https://github.com/zeabur/atlas/blob/HEAD/README.md">其 README</a></li>
+<li>目录与公司数据：<a href="https://www.everydev.ai/tools/nuphos">EveryDev — Nuphos</a> · <a href="https://www.producthunt.com/products/nuphos">Product Hunt — Nuphos</a> · <a href="https://pitchbook.com/profiles/company/533492-02">PitchBook — Zeabur</a></li>
+<li>竞品与协议：<a href="https://github.com/paperclipai/paperclip">paperclip</a> · <a href="https://github.com/BloopAI/vibe-kanban">vibe-kanban</a> · <a href="https://imbue.com/product/sculptor">Sculptor</a> · <a href="https://agentclientprotocol.com">agentclientprotocol.com</a> · <a href="https://github.com/JetBrains/agent-client-protocol">JetBrains/agent-client-protocol</a></li>
+</ul>
+<p>本页为静态调研快照，数据截至 2026-10-11；项目迭代极快（约 2 release/天），引用数字前请回源核对。</p>
+</div>
+</footer>
+
+<script>
+/* ---------- mindmap ---------- */
+var MM = {
+t: "Nuphos", children: [
+{ t: "一句话", children: [
+{ t: "Zeabur Inc. 的团队 agent 工作区"},
+{ t: "会话 = 多人可加入的「房间」，不绑机器"},
+{ t: "官网自称 SOC 2 Certified，仅 Contact sales"}
+]},
+{ t: "公司与时间线", children: [
+{ t: "主体 Zeabur Inc.（NOTICE / TRADEMARK）"},
+{ t: "创始人 Yuanlin Lin（林沅霖）", note: "二手，置信度中"},
+{ t: "Zeabur 累计融资约 $2.3M", note: "PitchBook，部分字段陈旧"},
+{ t: "2026 夏：托管产品面世（代号 Atlas）"},
+{ t: "2026-08-14：Product Hunt 上线"},
+{ t: "2026-10-01：开源仓库创建 + 重新定位"}
+]},
+{ t: "架构", children: [
+{ t: "backend：Bun/Hono + MongoDB + S3 + Redis（托管）"},
+{ t: "desktop：Electron/Vite/React"},
+{ t: "runtime：长寿命容器，恰一个 agent", children: [
+{ t: "① OpenAB 网关：ACP over WebSocket:8080"},
+{ t: "② agent CLI + ACP 适配器（补丁 SHA-256 钉住）"},
+{ t: "③ 工具集：git/gh/kubectl 常驻，其余 shim 按需下载"},
+{ t: "支持 Claude Code / Codex / Grok / Antigravity / OpenCode"},
+{ t: "镜像零凭据，uid 1000、drop all caps"}
+]},
+{ t: "ios：SwiftUI 接续会话；Android 未开源"},
+{ t: "cli：nuphos agent 把本机变成本地 runtime"},
+{ t: "认证：用用户自己的订阅，无额外模型费"},
+{ t: "后端内置 agent（atlas-agent-system.md）+ Bedrock 做标题/洞察"}
+]},
+{ t: "产品理念", children: [
+{ t: "会话即房间：多人共驾、看同一批工具调用"},
+{ t: "会话权限：仅受邀 / 全队可看 / 全队可回；Can reply / Can manage"},
+{ t: "三态 runtime 迁移：本地 / 远程 / 托管云"},
+{ t: "技能与工具：授权一次，全队同步"},
+{ t: "团队记忆：内置、免 MCP", note: "数据表示未披露"},
+{ t: "触发器：cron / webhook 自主开回合"},
+{ t: "Slack / Discord：agent 进团队频道"},
+{ t: "GUI 面板：K8s / Grafana / GitHub / Linear / AWS / GCP…", children: [
+{ t: "agent 操作账号本身，不是看截图"},
+{ t: "BYOC：AWS assume-role、GCP impersonation"}
+]}
+]},
+{ t: "许可", children: [
+{ t: "根 LICENSE = 标准 Apache-2.0 全文（逐字核对）"},
+{ t: "商标不随代码授予（TRADEMARK.md）"},
+{ t: "GitHub 标 Other = 探测失败（推断），非 source-available"},
+{ t: "不开：Android、托管置备/备份/运维、多团队、Google 登录、厂商 agent 本体"}
+]},
+{ t: "自托管", children: [
+{ t: "硬约束：一个部署 = 一个团队"},
+{ t: "Zeabur 一键 / Railway 指南 / Docker Compose"},
+{ t: "Compose 缺省：无 Redis → cron 与审计封存禁用"},
+{ t: "登录：邮箱 OTP；Google 登录仅 Cloud"}
+]},
+{ t: "热度（2026-10-11）", children: [
+{ t: "45 stars / 152 commits / 21 releases / 25 tags"},
+{ t: "五条版本线并行，约 2 release/天，全 <1.0"},
+{ t: "PR 169 已关闭，多为 bot——开发高度 agent 驱动"},
+{ t: "定价页 404；旧价 $29–$999/月已不可作现价"}
+]},
+{ t: "竞争", children: [
+{ t: "paperclip：治理控制面（组织图/预算/心跳），品类不同"},
+{ t: "Multica：issue 异步协作，最接近的团队论竞品"},
+{ t: "Conductor / Sculptor：单人单机并行编排"},
+{ t: "Vibe Kanban / Terragon：已退潮 / 已关停的先例"},
+{ t: "厂商云会话：单厂商围墙，正在合拢"},
+{ t: "ACP 生态：别人用 stdio，Nuphos 用网络化 ACP"}
+]},
+{ t: "风险", children: [
+{ t: "共享会话 = 共享权限（官方自警）"},
+{ t: "队友消息以机主身份在本地机执行"},
+{ t: "prompt injection 可直达生产云账号"},
+{ t: "团队记忆投毒面"},
+{ t: "适配器跟随成本：上游升级即构建失败"},
+{ t: "全线 <1.0、改名仓促（Atlas 残留）"}
+]}
+]
+};
+
+function buildMM(node, depth) {
+var li = document.createElement("li");
+if (depth === 0) li.className = "root";
+if (depth === 1) li.className = "l1";
+var row = document.createElement("div"); row.className = "row";
+var hasKids = node.children && node.children.length;
+if (hasKids) {
+var btn = document.createElement("button");
+btn.type = "button"; btn.className = "tw"; btn.textContent = "−";
+btn.setAttribute("aria-label", "折叠/展开");
+btn.addEventListener("click", function () {
+li.classList.toggle("closed");
+btn.textContent = li.classList.contains("closed")? "+": "−";
+});
+row.appendChild(btn);
+} else {
+var dot = document.createElement("span"); dot.className = "leaf-dot"; dot.textContent = "·";
+row.appendChild(dot);
+}
+var txt = document.createElement("span"); txt.className = "txt"; txt.textContent = node.t;
+row.appendChild(txt);
+if (node.note) {
+var n = document.createElement("span"); n.className = "note"; n.textContent = "（" + node.note + "）";
+row.appendChild(n);
+}
+li.appendChild(row);
+if (hasKids) {
+var ul = document.createElement("ul");
+node.children.forEach(function (c) { ul.appendChild(buildMM(c, depth + 1));});
+li.appendChild(ul);
+}
+return li;
+}
+var mmRoot = document.getElementById("mm-root");
+var topUl = document.createElement("ul");
+topUl.appendChild(buildMM(MM, 0));
+mmRoot.appendChild(topUl);
+
+function setAll(closed, maxDepth) {
+var items = mmRoot.querySelectorAll("li");
+items.forEach(function (li) {
+var depth = 0, p = li.parentElement;
+while (p && p!== mmRoot) { if (p.tagName === "UL") depth++; p = p.parentElement;}
+var hide = closed && depth > maxDepth;
+li.classList.toggle("closed", hide);
+var b = li.querySelector(":scope >.row >.tw");
+if (b) b.textContent = hide? "+": "−";
+});
+}
+document.getElementById("mm-expand").addEventListener("click", function () { setAll(false, 99);});
+document.getElementById("mm-collapse").addEventListener("click", function () { setAll(true, 1);});
+setAll(true, 1);
+
+/* ---------- scrollspy ---------- */
+var links = Array.prototype.slice.call(document.querySelectorAll("nav.toc a"));
+var map = {};
+links.forEach(function (a) { map[a.getAttribute("href").slice(1)] = a;});
+var obs = new IntersectionObserver(function (entries) {
+entries.forEach(function (e) {
+if (e.isIntersecting) {
+links.forEach(function (a) { a.classList.remove("on");});
+var a = map[e.target.id];
+if (a) a.classList.add("on");
+}
+});
+}, { rootMargin: "-30% 0px -60% 0px"});
+document.querySelectorAll("section[id]").forEach(function (s) { obs.observe(s);});
+</script>
+</body>
+</html>
