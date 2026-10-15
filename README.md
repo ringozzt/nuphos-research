@@ -21,7 +21,7 @@
 ## 1. 项目与公司
 
 - **产品定义**：面向团队的 agent 工作区——在多人、多机器、多工具间运行、管理、协作编程 agent。核心理念：编程 agent 默认是单人模式，Nuphos 让团队来运行它们。官网自称 SOC 2 Certified，有 Contact sales，无定价入口。
-- **公司主体**：NOTICE 署名 Copyright 2026 Zeabur Inc.；TRADEMARK.md 称名称与 logo 为 Zeabur Inc. 商标。创始人为 Zeabur CEO Yuanlin Lin（林沅霖，GitHub yuaanlin，NOTICE 首提交作者；置信度中）。PitchBook 称 Zeabur 2022 年成立、累计融资约 $2.3M（500 Global、Baidu Ventures、MiraclePlus 等），未见 Nuphos 单独融资——应理解为 Zeabur 的产品线。
+- **公司主体**：NOTICE 署名 Copyright 2026 Zeabur Inc.；TRADEMARK.md 称名称与 logo 为 Zeabur Inc. 商标。创始人为 Zeabur 创始人兼 CEO Yuanlin Lin（林沅霖，GitHub yuaanlin——其主页 bio 自述 Zeabur Founder & CEO、浙江大学计算机毕业，Product Hunt 本人留言自称 founder of Zeabur and now building Nuphos；一手核实）。PitchBook 称 Zeabur 2022 年成立、累计融资约 $2.3M（500 Global、Baidu Ventures、MiraclePlus 等），未见 Nuphos 单独融资——应理解为 Zeabur 的产品线。
 - **时间线**：前身仓库 zeabur/atlas 自述为 Nuphos 托管产品源码，产品原名 Atlas（后端提示词文件至今叫 atlas-agent-system.md）；EveryDev 2026-08 收录（DevOps 定位）；Product Hunt 2026-08 上线；开源仓库 2026-10-01 创建，Desktop v0.73.1 自称公共仓库的第一个完整 Desktop 发布。
 - **托管 vs 开源**：托管版（Nuphos Cloud）提供多团队单实例、托管 runtime 置备、备份、运维工具、Google 登录；开源仓库提供 backend / desktop / runtime / iOS / CLI 全部主要代码，自托管为单团队部署。
 
@@ -196,7 +196,7 @@ Terragon 已关停(先例)
 
 - 团队记忆的数据表示（自由文本 / 结构化 / 向量）在公开文档中未披露。
 - 托管产品现行定价：官网无价格页（/pricing 为 404），旧价不可引用。
-- 创始人个人页 URL、X/Discord 具体账号与社区规模、YouTube 覆盖：本次未核实。
+- 创始人个人页为 yual.in（其 GitHub 主页所挂）；X/Discord 具体账号与社区规模、YouTube 覆盖：本次未核实。
 - OpenAI 侧对「容器内跑 Codex + 多人共驾订阅」的条款口径：未找到对等文本。
 - GitHub "Other (NOASSERTION)" 的确切成因：官方未说明，本报告的解释为基于文件证据的推断。
 - 本调研底稿第 8 节尾部（订阅条款合规细节）原文截断，相关结论以一手条款文本核对为准。
